@@ -25,6 +25,12 @@ const userSchema = new Schema(
             trim: true,
             index: true
         },
+        companyName: {
+            type: String,
+            required: true,
+            trim: true,
+            index: true
+        },
         avater: {
             type: String, // cloudinary URL
             required: true

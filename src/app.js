@@ -24,7 +24,7 @@ app.use(cookieParser()) // used to get the access of user's cookie section (used
 import userRouter from "./routes/user.routes.js"
 
 //ROUTES DECLARATION
-app.use("/api/v1/users", userRouter)         // </api/v1/users> is the default prefix to be used before each userRoute
+app.use("/HirePro/api/v1/users", userRouter)         // </api/v1/users> is the default prefix to be used before each userRoute
 
 
 export { app }
