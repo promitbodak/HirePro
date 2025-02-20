@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { 
+    loginUser,
     registerUser 
 } from "../controllers/user.controller.js"
 
@@ -19,7 +20,8 @@ userRouter.route("/register").post(upload.fields([
     }
 ]), registerUser)
 
-
+userRouter.route("/login").post(upload.none(),loginUser) // If want to pass raw JSON data remove the [upload.none()] multer middleware, But if 
+                                                        // data is passed through Form-data then (req.body) needs this middleware to propagate the data in (req.body) 
 
 
 

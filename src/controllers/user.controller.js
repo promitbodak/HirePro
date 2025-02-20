@@ -7,6 +7,28 @@ import {User} from "../models/user.model.js"
 
 
 
+//An auxiliary function to generate tokens used by both login and logout controller
+const generateAccessAndRefreshTokens = async (userId) => {
+    try {
+        const user = await User.findById(userId)
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
+
+        user.refreshToken = refreshToken     // assigning refreshToken value to the already existing empty field named by refreshToken inside the User schema
+
+        await user.save(
+            {
+                validateBeforeSave: false    // saving the user change but not validating the entire schema before save
+            }
+        )
+
+        return {accessToken, refreshToken}
+
+    } catch (error) {
+        throw new ApiError(500, "something went wrong while generating access and refresh token")
+    }
+}
+
 
 const registerUser = asyncHandler(async (req, res) => {
     // get user details from the Frontend
@@ -99,10 +121,59 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
 
+const loginUser = asyncHandler(async (req, res) => {
+    // fetch data from req body
+    // username or email
+    // find the user 
+    // password check
+    // access and refresh Token generate and provide
+    // send to secure cookies
+
+    const {username, email, password} = req.body
+
+    if(!(username || email)){
+        throw new ApiError(405, "username OR email is required")
+    }
+
+    const user = await User.findOne(
+        {
+            $or: [{username}, {email}]
+        }
+    )
+    if(!user){
+        throw new ApiError(406, "user Not Found")
+    }
+
+
+    const isPasswordValid = await user.isPasswordCorrect(password)
+    if(!isPasswordValid){
+        throw new ApiError(407, "Password is Incorrect")
+    }
+
+    const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(user._id)
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")   //The user object without the specific parameter mentioned inside the select() statement
+    
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(200, {loggedInUser, accessToken, refreshToken}, "User logged in Successfully")
+    )
+
+})
 
 
 
 
 export  {
-    registerUser
+    registerUser,
+    loginUser
 }
