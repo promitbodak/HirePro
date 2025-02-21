@@ -1,10 +1,14 @@
 import { Router } from "express";
 import { 
     changeCurrentPassword,
+    getCurrentUser,
     loginUser,
     logoutUser,
     refreshAccessToken,
-    registerUser 
+    registerUser, 
+    updateAccountDetails,
+    updateUserAvater,
+    updateUserCoverImage
 } from "../controllers/user.controller.js"
 
 import { upload } from "../middlewares/multer.middleware.js"
@@ -33,5 +37,10 @@ userRouter.route("/login").post(upload.none(),loginUser) // If want to pass raw 
 userRouter.route("/logout").post(verifyJWT, logoutUser)
 userRouter.route("/refresh-token").post(refreshAccessToken)
 userRouter.route("/change-password").post(verifyJWT, changeCurrentPassword)
+userRouter.route("/current-user").get(verifyJWT, getCurrentUser)
+userRouter.route("/update-details").patch(verifyJWT, updateAccountDetails)
+userRouter.route("/avater").patch(verifyJWT, updateUserAvater)
+userRouter.route("/cover-image").patch(verifyJWT, updateUserCoverImage)
+
 
 export default userRouter

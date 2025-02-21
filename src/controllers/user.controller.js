@@ -269,6 +269,114 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
 
 
 
+const getCurrentUser = asyncHandler(async (req, res) => {
+    return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "current user fetched successfully"))
+})
+
+
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const {fullName, email, companyName} = req.body
+
+    if(!fullName || !email || !companyName){
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                fullName: fullName,
+                email: email,
+                companyName: companyName
+            }
+        },
+        {
+            new: true     // by this the return object will be returned after the updates
+        }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User information updated successfully"))
+})
+
+
+
+const updateUserAvater = asyncHandler(async (req, res) => {
+    const avaterLocalPath = req.file?.path
+
+    if(!avaterLocalPath){
+        throw new ApiError(400, "Avater file is missing")
+    }
+
+    // Work to be done -- MAKE FUNCTIONALITY TO DELETE THE PREVIOUS IMAGE
+
+    const avater = await uploadOnCloudinary(avaterLocalPath)
+
+    if(!avater.url){
+        throw new ApiError(400, "Error while uploading avater")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                avater: avater.url
+            }
+        },
+        {
+            new: true
+        }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, user, "Avater updated successfully")
+    )
+})
+
+
+
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+    
+    const coverImageLocalPath = req.file?.path
+
+    if(!coverImageLocalPath){
+        throw new ApiError(400, "CoverImage file is missing")
+    }
+
+    // work to be done -- MAKE FUNCTIONALITY TO DELETE THE PREVIOUS IMAGE
+
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+
+    if(!coverImage.url){
+        throw new ApiError(400, "Error while uploading coverImage")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                coverImage: coverImage.url
+            }
+        },
+        {
+            new: true
+        }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, user, "Cover image updated successfully")
+    )
+})
+
+
 
 
 
@@ -278,5 +386,9 @@ export  {
     loginUser,
     logoutUser,
     refreshAccessToken,
-    changeCurrentPassword
+    changeCurrentPassword,
+    getCurrentUser,
+    updateAccountDetails,
+    updateUserAvater,
+    updateUserCoverImage
 }
