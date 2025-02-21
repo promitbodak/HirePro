@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { 
+    changeCurrentPassword,
     loginUser,
     logoutUser,
     refreshAccessToken,
@@ -31,6 +32,6 @@ userRouter.route("/login").post(upload.none(),loginUser) // If want to pass raw 
 // SECURED ROUTES
 userRouter.route("/logout").post(verifyJWT, logoutUser)
 userRouter.route("/refresh-token").post(refreshAccessToken)
-
+userRouter.route("/change-password").post(verifyJWT, changeCurrentPassword)
 
 export default userRouter
