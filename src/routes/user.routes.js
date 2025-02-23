@@ -10,9 +10,9 @@ import {
     updateUserAvater,
     updateUserCoverImage
 } from "../controllers/user.controller.js"
-
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { createJob } from "../controllers/job.controller.js";
 
 
 const userRouter = Router()
@@ -41,6 +41,6 @@ userRouter.route("/current-user").get(verifyJWT, getCurrentUser)
 userRouter.route("/update-details").patch(verifyJWT, updateAccountDetails)
 userRouter.route("/avater").patch(verifyJWT, updateUserAvater)
 userRouter.route("/cover-image").patch(verifyJWT, updateUserCoverImage)
-
+userRouter.route("/job-create").post(verifyJWT, upload.single('jobCoverImage'), createJob)
 
 export default userRouter

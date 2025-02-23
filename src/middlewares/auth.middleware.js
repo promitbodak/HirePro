@@ -19,7 +19,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
             throw new ApiError(409, "Invalid AccessToken");
         }
 
-        req.user = user;
+        req.user = user;   // each time you use verifyJWT you create an user object accessible by (req.user)
 
         next()
         
